@@ -28,7 +28,7 @@ public class TimeBasedMessenger implements Runnable {
     @Override
     public void run() {
         // Schedule a task to run every minute to check the time
-        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 10, TimeUnit.MINUTES);
         // Schedule a task to reset the supplement message sent flag every day at midnight
         scheduler.scheduleAtFixedRate(this::resetSupplementMessageSent, 0, 1, TimeUnit.DAYS);
     }
@@ -61,11 +61,7 @@ public class TimeBasedMessenger implements Runnable {
         SendMessage message = new SendMessage();
         message.setChatId(bot.getChatId());
         message.setText(mess);
-        try {
-            bot.execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        bot.sendQuestion(message);
     }
 
     private void resetSupplementMessageSent() {
