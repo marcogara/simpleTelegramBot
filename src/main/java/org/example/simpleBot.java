@@ -39,11 +39,16 @@ public class simpleBot extends TelegramLongPollingBot {
         System.out.println(update.getMessage().getText());
         System.out.println(update.getMessage().getFrom().getFirstName());
 
-        String mess = "Hello " + update.getMessage().getFrom().getFirstName();
+        String mess = update.getMessage().getText();
+        String message = "";
+        
+        if (mess.equals("Yes")) {
+            message = "nice.";
+        }
 
         SendMessage response = new SendMessage();
         response.setChatId(this.chatId);
-        response.setText(mess);
+        response.setText(message);
 
         try {
             execute(response);
