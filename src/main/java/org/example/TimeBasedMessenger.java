@@ -11,24 +11,18 @@ import java.util.concurrent.TimeUnit;
 public class TimeBasedMessenger implements Runnable {
 
     private final simpleBot bot;
+    private final SupplementState supplementState;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final String MORNING_MESSAGE = "did you take your morning supplement ? Hair Supplement and Creatine";
-    private boolean morningMessageSent = false;
-    private final String NOON_MESSAGE = "did you take your after lunch supplement ? D3 and B group";
-    private boolean noonMessageSent = false;
-    private final String AFTERNOON_MESSAGE = "did you take your afternoon supplement ? Kollagen and Iron+C";
-    private boolean afternoonMessageSent = false;
-    private final String EVENING_MESSAGE = "did you take your evening supplement ? Omega 3 and Magnesium";
-    private boolean eveningMessageSent = false;
 
-    public TimeBasedMessenger(simpleBot bot) {
+    public TimeBasedMessenger(simpleBot bot, SupplementState supplementState) {
         this.bot = bot;
+        this.supplementState = supplementState;
     }
 
     @Override
     public void run() {
         // Schedule a task to run every minute to check the time
-        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 3, TimeUnit.MINUTES);
         // Schedule a task to reset the supplement message sent flag every day at midnight
         scheduler.scheduleAtFixedRate(this::resetSupplementMessageSent, 0, 1, TimeUnit.DAYS);
     }
@@ -36,24 +30,24 @@ public class TimeBasedMessenger implements Runnable {
     private void checkTimeAndSendSupplementMessage() {
         LocalTime now = LocalTime.now();
 
-        if (now.getHour() >= 9 && !morningMessageSent) {
-            sendSupplementMessage(MORNING_MESSAGE);
-            morningMessageSent = true;
+        if (now.getHour() >= 9 && !supplementState.morningMessageSent) {
+            sendSupplementMessage(SupplementState.MORNING_MESSAGE);
+            supplementState.morningMessageSent = true;
         }
 
-        if (now.getHour() >= 12 && !noonMessageSent) {
-            sendSupplementMessage(NOON_MESSAGE);
-            noonMessageSent = true;
+        if (now.getHour() >= 13 && !supplementState.noonMessageSent) {
+            sendSupplementMessage(SupplementState.NOON_MESSAGE);
+            supplementState.noonMessageSent = true;
         }
 
-        if (now.getHour() >= 15 && !afternoonMessageSent) {
-            sendSupplementMessage(AFTERNOON_MESSAGE);
-            afternoonMessageSent = true;
+        if (now.getHour() >= 15 && !supplementState.afternoonMessageSent) {
+            sendSupplementMessage(SupplementState.AFTERNOON_MESSAGE);
+            supplementState.afternoonMessageSent = true;
         }
 
-        if (now.getHour() >= 19 && !eveningMessageSent) {
-            sendSupplementMessage(EVENING_MESSAGE);
-            eveningMessageSent = true;
+        if (now.getHour() >= 19 && !supplementState.eveningMessageSent) {
+            sendSupplementMessage(SupplementState.EVENING_MESSAGE);
+            supplementState.eveningMessageSent = true;
         }
     }
 
@@ -65,9 +59,9 @@ public class TimeBasedMessenger implements Runnable {
     }
 
     private void resetSupplementMessageSent() {
-        this.morningMessageSent = false;
-        this.noonMessageSent = false;
-        this.afternoonMessageSent = false;
-        this.eveningMessageSent = false;
+        supplementState.morningMessageSent = false;
+        supplementState.noonMessageSent = false;
+        supplementState.afternoonMessageSent = false;
+        supplementState.eveningMessageSent = false;
     }
 }

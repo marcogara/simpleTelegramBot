@@ -9,10 +9,11 @@ public class Main {
 
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            simpleBot bot = new simpleBot();
+            SupplementState supplementState = new SupplementState();
+            simpleBot bot = new simpleBot(supplementState);
             botsApi.registerBot(bot);
 
-            TimeBasedMessenger timeBasedMessenger = new TimeBasedMessenger(bot);
+            TimeBasedMessenger timeBasedMessenger = new TimeBasedMessenger(bot, supplementState);
             Thread timeBasedMessengerThread = new Thread(timeBasedMessenger);
             timeBasedMessengerThread.start();
 

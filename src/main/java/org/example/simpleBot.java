@@ -17,9 +17,10 @@ public class simpleBot extends TelegramLongPollingBot {
     private String botUsername;
     private String chatId;
     private org.telegram.telegrambots.meta.api.objects.Message lastQuestion;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final SupplementState supplementState;
 
-    public simpleBot() {
+    public simpleBot(SupplementState supplementState) {
+        this.supplementState = supplementState;
         loadConfig();
     }
 
@@ -61,14 +62,20 @@ public class simpleBot extends TelegramLongPollingBot {
         }
 
         if (mess.equals("No")) {
-            message = "Ok, I will remind you in 10 min.";
+            message = "Ok, I will remind you in 3 min.";
             if (lastQuestion != null) {
                 String originalMessage = lastQuestion.getText();
                 System.out.println("User sent 'No' in response to: " + originalMessage);
-                SendMessage recallMessage = new SendMessage();
-                recallMessage.setChatId(this.chatId);
-                recallMessage.setText(originalMessage);
-                scheduler.schedule(() -> sendQuestion(recallMessage), 10, TimeUnit.MINUTES);
+
+                if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
+                    supplementState.morningMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
+                    supplementState.noonMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
+                    supplementState.afternoonMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
+                    supplementState.eveningMessageSent = false;
+                }
             }
         }
 
