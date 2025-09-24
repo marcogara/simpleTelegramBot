@@ -8,9 +8,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class simpleBot extends TelegramLongPollingBot {
     private String botToken;
@@ -62,7 +59,7 @@ public class simpleBot extends TelegramLongPollingBot {
         }
 
         if (mess.equals("No")) {
-            message = "Ok, I will remind you in 3 min.";
+            message = "Ok, I will remind you in 10 min.";
             if (lastQuestion != null) {
                 String originalMessage = lastQuestion.getText();
                 System.out.println("User sent 'No' in response to: " + originalMessage);

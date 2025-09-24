@@ -22,7 +22,7 @@ public class TimeBasedMessenger implements Runnable {
     @Override
     public void run() {
         // Schedule a task to run every minute to check the time
-        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 3, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(this::checkTimeAndSendSupplementMessage, 0, 10, TimeUnit.MINUTES);
         // Schedule a task to reset the supplement message sent flag every day at midnight
         scheduler.scheduleAtFixedRate(this::resetSupplementMessageSent, 0, 1, TimeUnit.DAYS);
     }
@@ -30,7 +30,7 @@ public class TimeBasedMessenger implements Runnable {
     private void checkTimeAndSendSupplementMessage() {
         LocalTime now = LocalTime.now();
 
-        if (now.getHour() >= 9 && !supplementState.morningMessageSent) {
+        if (now.getHour() >= 9 && now.getHour() < 12 && !supplementState.morningMessageSent) {
             sendSupplementMessage(SupplementState.MORNING_MESSAGE);
             supplementState.morningMessageSent = true;
         }
