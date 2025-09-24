@@ -35,12 +35,12 @@ public class TimeBasedMessenger implements Runnable {
             supplementState.morningMessageSent = true;
         }
 
-        if (now.getHour() >= 13 && !supplementState.noonMessageSent) {
+        if (now.getHour() >= 13 && now.getHour() < 15 && !supplementState.noonMessageSent) {
             sendSupplementMessage(SupplementState.NOON_MESSAGE);
             supplementState.noonMessageSent = true;
         }
 
-        if (now.getHour() >= 15 && !supplementState.afternoonMessageSent) {
+        if (now.getHour() >= 15 && now.getHour() < 17 && !supplementState.afternoonMessageSent) {
             sendSupplementMessage(SupplementState.AFTERNOON_MESSAGE);
             supplementState.afternoonMessageSent = true;
         }
@@ -48,6 +48,11 @@ public class TimeBasedMessenger implements Runnable {
         if (now.getHour() >= 19 && !supplementState.eveningMessageSent) {
             sendSupplementMessage(SupplementState.EVENING_MESSAGE);
             supplementState.eveningMessageSent = true;
+        }
+
+        if (now.getHour() >= 21 && !supplementState.eveningMessageSent) {
+            sendSupplementMessage(SupplementState.NIGHT_TIME_ROUTINE_MESSAGE);
+            supplementState.nightTimeRoutineMessageSent = true;
         }
     }
 
