@@ -50,7 +50,7 @@ public class TimeBasedMessenger implements Runnable {
             supplementState.eveningMessageSent = true;
         }
 
-        if (now.getHour() >= 21 && !supplementState.eveningMessageSent) {
+        if (now.getHour() >= 21 && !supplementState.nightTimeRoutineMessageSent) {
             sendSupplementMessage(SupplementState.NIGHT_TIME_ROUTINE_MESSAGE);
             supplementState.nightTimeRoutineMessageSent = true;
         }
