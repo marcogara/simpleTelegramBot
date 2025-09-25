@@ -8,7 +8,10 @@ public class ListCommand implements Command{
         if(bot.getCurrentConversation() == this) {
             bot.sendMessage("you want:" + "/add" + ", " + "/done" + " a task?");
         } else {
-            bot.sendMessage("Here is you list: " + bot.getTodoList().toString());
+            bot.sendMessage("Here is you list: ");
+            for (int i = 0; i < bot.getTodoList().size(); i++) {
+                bot.sendMessage((i+1) + ", " + bot.getTodoList().get(i));
+            }
             bot.setCurrentConversation(this);
         }
     }
