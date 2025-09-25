@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import java.util.Map;
+
 public class simpleBot extends TelegramLongPollingBot {
     private String botToken;
     private String botUsername;
@@ -18,9 +20,32 @@ public class simpleBot extends TelegramLongPollingBot {
     private org.telegram.telegrambots.meta.api.objects.Message lastQuestion;
     private final SupplementState supplementState;
 
+    // State and Command Management
+    private final List<String> todoList = new ArrayList<>();
+    private Command currentConversation = null;
+    private final Map<String, Command> commandRegistry;
+
+
     public simpleBot(SupplementState supplementState) {
         this.supplementState = supplementState;
         loadConfig();
+
+        // Initialize Command Registry
+        commandRegistry = new java.util.HashMap<>();
+        commandRegistry.put("/add", new AddCommand());
+        // TODO: Add other commands here (e.g., /list, /done)
+    }
+
+    public List<String> getTodoList() {
+        return todoList;
+    }
+
+    public void setCurrentConversation(Command command) {
+        this.currentConversation = command;
+    }
+
+    public Command getCurrentConversation() {
+        return currentConversation;
     }
 
     public void sendQuestion(SendMessage message) {
@@ -49,43 +74,59 @@ public class simpleBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        String responseMessage = "";
         if (update.hasMessage() && update.getMessage().hasText()) {
             String userMessage = update.getMessage().getText();
 
+            // If we are in a conversation, let the current command handle the message
+            if (currentConversation != null) {
+                currentConversation.execute(update, this);
+                return;
+            }
+
+            // Keep existing Yes/No/Hi logic
             if (userMessage.equalsIgnoreCase("Yes")) {
-                    responseMessage = "nice.";
-                    lastQuestion = null;
-                sendMessage(responseMessage);
+                sendMessage("nice.");
+                lastQuestion = null;
+                return;
             }
 
             if (userMessage.equalsIgnoreCase("No")) {
-                    responseMessage = "Ok, I will remind you in 10 min.";
-                    if (lastQuestion != null) {
-                        String originalMessage = lastQuestion.getText();
-                        System.out.println("User sent 'No' in response to: " + originalMessage);
+                String responseMessage = "Ok, I will remind you in 10 min.";
+                if (lastQuestion != null) {
+                    String originalMessage = lastQuestion.getText();
+                    System.out.println("User sent 'No' in response to: " + originalMessage);
 
-                        if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
-                            supplementState.morningMessageSent = false;
-                        } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
-                            supplementState.noonMessageSent = false;
-                        } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
-                            supplementState.afternoonMessageSent = false;
-                        } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
-                            supplementState.eveningMessageSent = false;
-                        }
+                    if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
+                        supplementState.morningMessageSent = false;
+                    } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
+                        supplementState.noonMessageSent = false;
+                    } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
+                        supplementState.afternoonMessageSent = false;
+                    } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
+                        supplementState.eveningMessageSent = false;
                     }
+                }
                 sendMessage(responseMessage);
+                return;
             }
 
             if (userMessage.equalsIgnoreCase("Hi")) {
-                    responseMessage = "Hi";
-                sendMessage(responseMessage);
+                sendMessage("Hi");
+                return;
             }
+
+            // If not a special case, check for commands
+            Command command = commandRegistry.get(userMessage.split(" ")[0].toLowerCase());
+
+            if (command != null) {
+                command.execute(update, this);
+            } else {
+                sendMessage("I don't understand that command. Try /add, /list, or /done.");
             }
         }
+    }
 
-    private void sendMessage(String responseMessage) {
+    public void sendMessage(String responseMessage) {
         if (!responseMessage.isEmpty()) {
             SendMessage response = new SendMessage();
             response.setChatId(this.chatId);
