@@ -68,5 +68,6 @@ public class TimeBasedMessenger implements Runnable {
         supplementState.noonMessageSent = false;
         supplementState.afternoonMessageSent = false;
         supplementState.eveningMessageSent = false;
+        supplementState.nightTimeRoutineMessageSent = false;
     }
 }
