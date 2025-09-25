@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class simpleBot extends TelegramLongPollingBot {
@@ -47,46 +49,53 @@ public class simpleBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println(update.getMessage().getText());
-        System.out.println(update.getMessage().getFrom().getFirstName());
+        String responseMessage = "";
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String userMessage = update.getMessage().getText();
 
-        String mess = update.getMessage().getText();
-        String message = "";
-        
-        if (mess.equals("Yes")) {
-            message = "nice.";
-            lastQuestion = null;
-        }
+            if (userMessage.equalsIgnoreCase("Yes")) {
+                    responseMessage = "nice.";
+                    lastQuestion = null;
+                sendMessage(responseMessage);
+            }
 
-        if (mess.equals("No")) {
-            message = "Ok, I will remind you in 10 min.";
-            if (lastQuestion != null) {
-                String originalMessage = lastQuestion.getText();
-                System.out.println("User sent 'No' in response to: " + originalMessage);
+            if (userMessage.equalsIgnoreCase("No")) {
+                    responseMessage = "Ok, I will remind you in 10 min.";
+                    if (lastQuestion != null) {
+                        String originalMessage = lastQuestion.getText();
+                        System.out.println("User sent 'No' in response to: " + originalMessage);
 
-                if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
-                    supplementState.morningMessageSent = false;
-                } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
-                    supplementState.noonMessageSent = false;
-                } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
-                    supplementState.afternoonMessageSent = false;
-                } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
-                    supplementState.eveningMessageSent = false;
-                }
+                        if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
+                            supplementState.morningMessageSent = false;
+                        } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
+                            supplementState.noonMessageSent = false;
+                        } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
+                            supplementState.afternoonMessageSent = false;
+                        } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
+                            supplementState.eveningMessageSent = false;
+                        }
+                    }
+                sendMessage(responseMessage);
+            }
+
+            if (userMessage.equalsIgnoreCase("Hi")) {
+                    responseMessage = "Hi";
+                sendMessage(responseMessage);
+            }
             }
         }
 
-        // User can prove if the bot is online
-        if (mess.equals("Hi")) message = "Hi";
+    private void sendMessage(String responseMessage) {
+        if (!responseMessage.isEmpty()) {
+            SendMessage response = new SendMessage();
+            response.setChatId(this.chatId);
+            response.setText(responseMessage);
 
-        SendMessage response = new SendMessage();
-        response.setChatId(this.chatId);
-        response.setText(message);
-
-        try {
-            execute(response);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+            try {
+                execute(response);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
