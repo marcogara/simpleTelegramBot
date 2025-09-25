@@ -33,6 +33,7 @@ public class simpleBot extends TelegramLongPollingBot {
         // Initialize Command Registry
         commandRegistry = new java.util.HashMap<>();
         commandRegistry.put("/add", new AddCommand());
+        commandRegistry.put("/list", new ListCommand());
         // TODO: Add other commands here (e.g., /list, /done)
     }
 
@@ -76,14 +77,24 @@ public class simpleBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String userMessage = update.getMessage().getText();
+            String commandKey = userMessage.split(" ")[0].toLowerCase();
 
-            // If we are in a conversation, let the current command handle the message
+            Command newCommand = commandRegistry.get(commandKey);
+
+            // If the user's message is a recognized command, execute it.
+            // This allows a new command to interrupt an ongoing conversation.
+            if (newCommand != null) {
+                newCommand.execute(update, this);
+                return;
+            }
+
+            // If it's not a new command, check if we are in a conversation.
             if (currentConversation != null) {
                 currentConversation.execute(update, this);
                 return;
             }
 
-            // Keep existing Yes/No/Hi logic
+            // Keep existing Yes/No/Hi logic if no command or conversation is active
             if (userMessage.equalsIgnoreCase("Yes")) {
                 sendMessage("nice.");
                 lastQuestion = null;
@@ -115,14 +126,7 @@ public class simpleBot extends TelegramLongPollingBot {
                 return;
             }
 
-            // If not a special case, check for commands
-            Command command = commandRegistry.get(userMessage.split(" ")[0].toLowerCase());
-
-            if (command != null) {
-                command.execute(update, this);
-            } else {
-                sendMessage("I don't understand that command. Try /add, /list, or /done.");
-            }
+            sendMessage("I don't understand that command. Try /add, /list, or /done.");
         }
     }
 
