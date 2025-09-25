@@ -76,6 +76,9 @@ public class simpleBot extends TelegramLongPollingBot {
             }
         }
 
+        // User can prove if the bot is online
+        if (mess.equals("Hi")) message = "Hi";
+
         SendMessage response = new SendMessage();
         response.setChatId(this.chatId);
         response.setText(message);
