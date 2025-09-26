@@ -79,59 +79,11 @@ public class simpleBot extends TelegramLongPollingBot {
             String userMessage = update.getMessage().getText();
             String commandKey = userMessage.split(" ")[0].toLowerCase();
 
-            if (commandKey != null) {
+            if (commandKey != null && commandRegistry.containsKey(commandKey)) {
                 executeCommandLogic(commandKey, update, this);
+            } else {
+                executeCustomLogic(update);
             }
-
-            // Keep existing Yes/No/Hi logic if no command or conversation is active
-            if (userMessage.equalsIgnoreCase("Yes")) {
-                sendMessage("nice.");
-                lastQuestion = null;
-                return;
-            }
-
-            if (userMessage.equalsIgnoreCase("No")) {
-                String responseMessage = "Ok, I will remind you in 10 min.";
-                if (lastQuestion != null) {
-                    String originalMessage = lastQuestion.getText();
-                    System.out.println("User sent 'No' in response to: " + originalMessage);
-
-                    if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
-                        supplementState.morningMessageSent = false;
-                    } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
-                        supplementState.noonMessageSent = false;
-                    } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
-                        supplementState.afternoonMessageSent = false;
-                    } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
-                        supplementState.eveningMessageSent = false;
-                    }
-                }
-                sendMessage(responseMessage);
-                return;
-            }
-
-            if (userMessage.equalsIgnoreCase("Hi")) {
-                sendMessage("Hi");
-                return;
-            }
-
-            // sendMessage("I don't understand that command. Try /add, /list, or /done.");
-        }
-    }
-
-    private void executeCommandLogic(String commandKey, Update update, simpleBot simpleBot) {
-        Command newCommand = commandRegistry.get(commandKey);
-
-        // If the user's message is a recognized command, execute it.
-        // This allows a new command to interrupt an ongoing conversation.
-        if (newCommand != null) {
-            newCommand.execute(update, this);
-            return;
-        }
-
-        // If it's not a new command, check if we are in a conversation.
-        if (currentConversation != null) {
-            currentConversation.execute(update, this);
         }
     }
 
@@ -161,5 +113,56 @@ public class simpleBot extends TelegramLongPollingBot {
 
     public String getChatId() {
         return this.chatId;
+    }
+
+    private void executeCustomLogic(Update update) {
+        String userMessage = update.getMessage().getText();
+        // Keep existing Yes/No/Hi logic if no command or conversation is active
+        if (userMessage.equalsIgnoreCase("Yes")) {
+            sendMessage("nice.");
+            lastQuestion = null;
+            return;
+        }
+
+        if (userMessage.equalsIgnoreCase("No")) {
+            String responseMessage = "Ok, I will remind you in 10 min.";
+            if (lastQuestion != null) {
+                String originalMessage = lastQuestion.getText();
+                System.out.println("User sent 'No' in response to: " + originalMessage);
+
+                if (originalMessage.equals(SupplementState.MORNING_MESSAGE)) {
+                    supplementState.morningMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.NOON_MESSAGE)) {
+                    supplementState.noonMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.AFTERNOON_MESSAGE)) {
+                    supplementState.afternoonMessageSent = false;
+                } else if (originalMessage.equals(SupplementState.EVENING_MESSAGE)) {
+                    supplementState.eveningMessageSent = false;
+                }
+            }
+            sendMessage(responseMessage);
+            return;
+        }
+
+        if (userMessage.equalsIgnoreCase("Hi")) {
+            sendMessage("Hi");
+            return;
+        }
+    }
+
+    private void executeCommandLogic(String commandKey, Update update, simpleBot simpleBot) {
+        Command newCommand = commandRegistry.get(commandKey);
+
+        // If the user's message is a recognized command, execute it.
+        // This allows a new command to interrupt an ongoing conversation.
+        if (newCommand != null) {
+            newCommand.execute(update, this);
+            return;
+        }
+
+        // If it's not a new command, check if we are in a conversation.
+        if (currentConversation != null) {
+            currentConversation.execute(update, this);
+        }
     }
 }
