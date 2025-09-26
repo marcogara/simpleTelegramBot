@@ -146,7 +146,6 @@ public class simpleBot extends TelegramLongPollingBot {
 
         if (userMessage.equalsIgnoreCase("Hi")) {
             sendMessage("Hi");
-            return;
         }
     }
 
