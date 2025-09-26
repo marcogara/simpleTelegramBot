@@ -79,19 +79,8 @@ public class simpleBot extends TelegramLongPollingBot {
             String userMessage = update.getMessage().getText();
             String commandKey = userMessage.split(" ")[0].toLowerCase();
 
-            Command newCommand = commandRegistry.get(commandKey);
-
-            // If the user's message is a recognized command, execute it.
-            // This allows a new command to interrupt an ongoing conversation.
-            if (newCommand != null) {
-                newCommand.execute(update, this);
-                return;
-            }
-
-            // If it's not a new command, check if we are in a conversation.
-            if (currentConversation != null) {
-                currentConversation.execute(update, this);
-                return;
+            if (commandKey != null) {
+                executeCommandLogic(commandKey, update, this);
             }
 
             // Keep existing Yes/No/Hi logic if no command or conversation is active
@@ -126,7 +115,23 @@ public class simpleBot extends TelegramLongPollingBot {
                 return;
             }
 
-            sendMessage("I don't understand that command. Try /add, /list, or /done.");
+            // sendMessage("I don't understand that command. Try /add, /list, or /done.");
+        }
+    }
+
+    private void executeCommandLogic(String commandKey, Update update, simpleBot simpleBot) {
+        Command newCommand = commandRegistry.get(commandKey);
+
+        // If the user's message is a recognized command, execute it.
+        // This allows a new command to interrupt an ongoing conversation.
+        if (newCommand != null) {
+            newCommand.execute(update, this);
+            return;
+        }
+
+        // If it's not a new command, check if we are in a conversation.
+        if (currentConversation != null) {
+            currentConversation.execute(update, this);
         }
     }
 
