@@ -79,10 +79,10 @@ public class simpleBot extends TelegramLongPollingBot {
             String userMessage = update.getMessage().getText();
             String commandKey = userMessage.split(" ")[0].toLowerCase();
 
-            if (commandKey != null && commandRegistry.containsKey(commandKey)) {
-                executeCommandLogic(commandKey, update, this);
-            } else {
+            if (userMessage.equals("Yes") || userMessage.equals("Hi") || userMessage.equals("No")){
                 executeCustomLogic(update);
+            } else if (commandKey != null || currentConversation != null) {
+                executeCommandLogic(commandKey, update, this);
             }
         }
     }
