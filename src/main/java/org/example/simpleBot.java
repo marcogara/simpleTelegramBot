@@ -165,4 +165,10 @@ public class simpleBot extends TelegramLongPollingBot {
             currentConversation.execute(update, this);
         }
     }
+
+    public void displayList() {
+        for (int i = 0; i < this.getTodoList().size(); i++) {
+            this.sendMessage((i+1) + ", " + this.getTodoList().get(i));
+        }
+    }
 }

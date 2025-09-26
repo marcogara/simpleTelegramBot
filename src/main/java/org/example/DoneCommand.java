@@ -10,16 +10,12 @@ public class DoneCommand implements Command{
             bot.getTodoList().remove(task-1);
 
             bot.sendMessage("Task deleted, here is you list: ");
-            for (int i = 0; i < bot.getTodoList().size(); i++) {
-                bot.sendMessage((i+1) + ", " + bot.getTodoList().get(i));
-            }
+            bot.displayList();
 
             bot.setCurrentConversation(null);
         } else {
             bot.sendMessage("Here is you list: ");
-            for (int i = 0; i < bot.getTodoList().size(); i++) {
-                bot.sendMessage((i+1) + ", " + bot.getTodoList().get(i));
-            }
+            bot.displayList();
             bot.sendMessage("To delete press the number of the task you want to delete.");
             bot.setCurrentConversation(this);
         }
