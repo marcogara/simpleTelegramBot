@@ -34,7 +34,7 @@ public class simpleBot extends TelegramLongPollingBot {
         commandRegistry = new java.util.HashMap<>();
         commandRegistry.put("/add", new AddCommand());
         commandRegistry.put("/list", new ListCommand());
-        // TODO: Add other commands here (e.g., /list, /done)
+        commandRegistry.put("/done", new DoneCommand());
     }
 
     public List<String> getTodoList() {
