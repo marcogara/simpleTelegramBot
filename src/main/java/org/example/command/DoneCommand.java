@@ -1,8 +1,9 @@
-package org.example;
+package org.example.command;
 
+import org.example.simpleBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-public class DoneCommand implements Command{
+public class DoneCommand implements Command {
     @Override
     public void execute(Update update, simpleBot bot) {
         if(bot.getCurrentConversation() == this) {
