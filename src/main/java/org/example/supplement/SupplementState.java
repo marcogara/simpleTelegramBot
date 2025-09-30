@@ -1,4 +1,4 @@
-package org.example;
+package org.example.supplement;
 
 public class SupplementState {
     public static final String MORNING_MESSAGE = "did you take your morning supplement ? Hair Supplement and Creatine";

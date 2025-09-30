@@ -4,6 +4,7 @@ import org.example.command.AddCommand;
 import org.example.command.Command;
 import org.example.command.DoneCommand;
 import org.example.command.ListCommand;
+import org.example.supplement.SupplementState;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
