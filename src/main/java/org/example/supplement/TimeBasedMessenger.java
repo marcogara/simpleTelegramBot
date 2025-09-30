@@ -31,36 +31,29 @@ public class TimeBasedMessenger implements Runnable {
         LocalTime now = LocalTime.now();
 
         if (now.getHour() >= 9 && now.getHour() < 12 && !supplementState.morningMessageSent) {
-            sendSupplementMessage(SupplementState.MORNING_MESSAGE);
+            bot.sendMessage(SupplementState.MORNING_MESSAGE);
             supplementState.morningMessageSent = true;
         }
 
         if (now.getHour() >= 13 && now.getHour() < 15 && !supplementState.noonMessageSent) {
-            sendSupplementMessage(SupplementState.NOON_MESSAGE);
+            bot.sendMessage(SupplementState.NOON_MESSAGE);
             supplementState.noonMessageSent = true;
         }
 
         if (now.getHour() >= 15 && now.getHour() < 17 && !supplementState.afternoonMessageSent) {
-            sendSupplementMessage(SupplementState.AFTERNOON_MESSAGE);
+            bot.sendMessage(SupplementState.AFTERNOON_MESSAGE);
             supplementState.afternoonMessageSent = true;
         }
 
         if (now.getHour() >= 19 && !supplementState.eveningMessageSent) {
-            sendSupplementMessage(SupplementState.EVENING_MESSAGE);
+            bot.sendMessage(SupplementState.EVENING_MESSAGE);
             supplementState.eveningMessageSent = true;
         }
 
         if (now.getHour() >= 21 && !supplementState.nightTimeRoutineMessageSent) {
-            sendSupplementMessage(SupplementState.NIGHT_TIME_ROUTINE_MESSAGE);
+            bot.sendMessage(SupplementState.NIGHT_TIME_ROUTINE_MESSAGE);
             supplementState.nightTimeRoutineMessageSent = true;
         }
-    }
-
-    private void sendSupplementMessage(String mess) {
-        SendMessage message = new SendMessage();
-        message.setChatId(bot.getChatId());
-        message.setText(mess);
-        bot.sendQuestion(message);
     }
 
     private void resetSupplementMessageSent() {
